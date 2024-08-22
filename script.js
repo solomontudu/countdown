@@ -8,6 +8,10 @@ const countdownBtn = document.getElementById("countdown-button");
 const timeElements = document.querySelectorAll("span");
 const countdownReset = document.getElementById("countdownReset");
 
+const completeEl = document.getElementById("complete");
+const completeElInfo = document.querySelector(".complete-info");
+const completeBtn = document.getElementById("complete-button");
+
 let countdownTitle = "";
 let countdownDate = "";
 let countdownValue = Date;
@@ -36,15 +40,24 @@ function updateDOM() {
 
     // hide input
     inputContainer.hidden = true;
-    // show countdown
-    countdownEl.hidden = false;
 
-    // populating countdown
-    countdownElTitle.textContent = `${countdownTitle}`;
-    timeElements[0].textContent = `${days}`;
-    timeElements[1].textContent = `${hours}`;
-    timeElements[2].textContent = `${minutes}`;
-    timeElements[3].textContent = `${seconds}`;
+    // if the countdown has ended, show complete
+    if (distance < 0) {
+      countdownEl.hidden = true;
+      completeEl.hidden = false;
+      clearInterval(countdownActive);
+      completeElInfo.textContent = `${countdownTitle} finished on ${countdownDate}`;
+    } else {
+      // else, show the countdown in progress
+      // populating countdown
+      countdownElTitle.textContent = `${countdownTitle}`;
+      timeElements[0].textContent = `${days}`;
+      timeElements[1].textContent = `${hours}`;
+      timeElements[2].textContent = `${minutes}`;
+      timeElements[3].textContent = `${seconds}`;
+      completeEl.hidden = true;
+      countdownEl.hidden = false;
+    }
   }, second);
 }
 
@@ -68,6 +81,7 @@ function updateCountDown(e) {
 function reset() {
   // hide countdowns, show input
   countdownEl.hidden = true;
+  completeEl.hidden = true;
   inputContainer.hidden = false;
 
   // stop countdown
@@ -80,3 +94,4 @@ function reset() {
 // event listners
 countdownForm.addEventListener("submit", updateCountDown);
 countdownReset.addEventListener("click", reset);
+completeBtn.addEventListener("click", reset);
