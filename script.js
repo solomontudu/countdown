@@ -6,10 +6,12 @@ const countdownEl = document.getElementById("countdown");
 const countdownElTitle = document.getElementById("countdown-title");
 const countdownBtn = document.getElementById("countdown-button");
 const timeElements = document.querySelectorAll("span");
+const countdownReset = document.getElementById("countdownReset");
 
 let countdownTitle = "";
 let countdownDate = "";
 let countdownValue = Date;
+let countdownActive;
 
 const second = 1000;
 const minute = second * 60;
@@ -23,25 +25,27 @@ dateEl.setAttribute("min", today);
 
 // populate countdown / complete UI
 function updateDOM() {
-  const now = new Date().getTime();
-  const distance = countdownValue - now;
+  countdownActive = setInterval(() => {
+    const now = new Date().getTime();
+    const distance = countdownValue - now;
 
-  const days = Math.floor(distance / day);
-  const hours = Math.floor((distance % day) / hour);
-  const minutes = Math.floor((distance % hour) / minute);
-  const seconds = Math.floor((distance % minute) / second);
+    const days = Math.floor(distance / day);
+    const hours = Math.floor((distance % day) / hour);
+    const minutes = Math.floor((distance % hour) / minute);
+    const seconds = Math.floor((distance % minute) / second);
 
-  // hide input
-  inputContainer.hidden = true;
-  // show countdown
-  countdownEl.hidden = false;
+    // hide input
+    inputContainer.hidden = true;
+    // show countdown
+    countdownEl.hidden = false;
 
-  // populating countdown
-  countdownElTitle.textContent = `${countdownTitle}`;
-  timeElements[0].textContent = `${days}`;
-  timeElements[1].textContent = `${hours}`;
-  timeElements[2].textContent = `${minutes}`;
-  timeElements[3].textContent = `${seconds}`;
+    // populating countdown
+    countdownElTitle.textContent = `${countdownTitle}`;
+    timeElements[0].textContent = `${days}`;
+    timeElements[1].textContent = `${hours}`;
+    timeElements[2].textContent = `${minutes}`;
+    timeElements[3].textContent = `${seconds}`;
+  }, second);
 }
 
 // take values from form input
@@ -50,10 +54,29 @@ function updateCountDown(e) {
   countdownTitle = e.srcElement[0].value;
   countdownDate = e.srcElement[1].value;
 
-  // get number version of current date, updateDOM
-  countdownValue = new Date(countdownDate).getTime();
-  updateDOM();
+  // check for valid date
+  if (countdownDate === "") {
+    alert("Please select a date for the countdown.");
+  } else {
+    // get number version of current date, updateDOM
+    countdownValue = new Date(countdownDate).getTime();
+    updateDOM();
+  }
+}
+
+// reset all values
+function reset() {
+  // hide countdowns, show input
+  countdownEl.hidden = true;
+  inputContainer.hidden = false;
+
+  // stop countdown
+  clearInterval(countdownActive);
+  // reset values
+  countdownTitle = "";
+  countdownDate = "";
 }
 
 // event listners
 countdownForm.addEventListener("submit", updateCountDown);
+countdownReset.addEventListener("click", reset);
